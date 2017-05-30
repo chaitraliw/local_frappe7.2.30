@@ -272,7 +272,8 @@ def msgprint(msg, title=None, raise_exception=0, as_table=False, indicator=None,
 			import inspect
 
 			if inspect.isclass(raise_exception) and issubclass(raise_exception, Exception):
-				raise raise_exception, encode(msg)
+				print raise_exception,"\n\n\n\n\n"
+				# raise raise_exception, encode(msg)
 			else:
 				raise ValidationError, encode(msg)
 
@@ -1159,7 +1160,7 @@ def format(*args, **kwargs):
 	import frappe.utils.formatters
 	return frappe.utils.formatters.format_value(*args, **kwargs)
 
-def get_print(doctype=None, name=None, print_format=None, style=None, html=None, as_pdf=False, doc=None, output = None):
+def get_print(doctype=None, name=None, print_format=None, style=None, html=None, as_pdf=False, doc=None, output = None, orientation="Portrait"):
 	"""Get Print Format for given document.
 
 	:param doctype: DocType of document.
@@ -1180,11 +1181,11 @@ def get_print(doctype=None, name=None, print_format=None, style=None, html=None,
 		html = build_page("print")
 
 	if as_pdf:
-		return get_pdf(html, output = output)
+		return get_pdf(html, options = {"orientation": orientation}, output = output) #orientation added
 	else:
 		return html
-
-def attach_print(doctype, name, file_name=None, print_format=None, style=None, html=None, doc=None):
+#argument is passed for Orientation(by default it will be Potrait)
+def attach_print(doctype, name, file_name=None, print_format=None, style=None, html=None, doc=None, orientation="Portrait"):
 	from frappe.utils import scrub_urls
 
 	if not file_name: file_name = name
@@ -1197,7 +1198,7 @@ def attach_print(doctype, name, file_name=None, print_format=None, style=None, h
 	if int(print_settings.send_print_as_pdf or 0):
 		out = {
 			"fname": file_name + ".pdf",
-			"fcontent": get_print(doctype, name, print_format=print_format, style=style, html=html, as_pdf=True, doc=doc)
+			"fcontent": get_print(doctype, name, print_format=print_format, style=style, html=html, as_pdf=True, doc=doc, orientation=orientation) #orientation added
 		}
 	else:
 		out = {
